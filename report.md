@@ -44,7 +44,7 @@ As the observation space of the environment for each agent is `state_size = 24` 
 # 2. Plot of Rewards
 With the above described agent the environment has been solved in TODO: 1858 episodes. The development of average rewards as well with all scores over each episode are provided below.
 
-![Score over Episodes for DDPG agent](./data/DDPG_results_report.png "Score over Episodes")
+![Score over Episodes for DDPG agent](./data/MADDPG_results_report.png "Score over Episodes")
 
 Without exploration a mean score of TODO can be reached.
 
