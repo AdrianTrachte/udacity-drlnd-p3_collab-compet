@@ -9,12 +9,12 @@ import torch
 import torch.nn.functional as F
 import torch.optim as optim
 
-GAMMA = 1.0             # discount factor
+GAMMA = 0.99            # discount factor
 TAU = 1e-3              # for soft update of target parameters
 LR_CRIT = 1e-3          # learning rate critic
-LR_ACTR = 1e-4          # learning rate actor
-WEIGHT_DECAY = 1e-2     # L2 weight decay
-UPDATE_EVERY = 2        # how often to update the network
+LR_ACTR = 1e-4          # learning rate actor (should be smaller than critic)
+WEIGHT_DECAY = 0        # L2 weight decay
+UPDATE_EVERY = 1        # how often to update the network, 1 = every step, 2 = every 2nd step, ...
 GD_EPOCH = 1            # how often to optimize when learning is triggered
 CLIP_GRAD = 1           # clippin gradient with this value
 
@@ -38,20 +38,20 @@ class Agent():
 
         # Q-Network / Critic
         # Create the network, define the criterion and optimizer
-        hidden_layers = [26, 26]
+        hidden_layers = [256, 128]
         self.qnetwork_local = QNetwork(state_size, action_size, hidden_layers, seed).to(device)
         self.qnetwork_target = QNetwork(state_size, action_size, hidden_layers, seed).to(device)
         self.qnetwork_optimizer = optim.Adam(self.qnetwork_local.parameters(), lr=LR_CRIT, weight_decay=WEIGHT_DECAY)
         
         # mu-Network / Actor
         # Create the network, define the criterion and optimizer
-        hidden_layers = [24, 24]
+        hidden_layers = [256, 128]
         self.munetwork_local = ActorPolicy(state_size, action_size, hidden_layers, seed).to(device)
         self.munetwork_target = ActorPolicy(state_size, action_size, hidden_layers, seed).to(device)
         self.munetwork_optimizer = optim.Adam(self.munetwork_local.parameters(), lr=LR_ACTR)
         
         # Noise process
-        self.noise = OUNoise(action_size, seed)
+        self.noise = OUNoise(action_size, seed, mu=0., theta=1.0, sigma=0.7)
         
         # Replay memory
         if memory is None:
@@ -70,7 +70,7 @@ class Agent():
         if self.t_step == 0:
             # If enough samples are available in memory, get random subset and learn
             #if len(self.memory) > self.memory.buffer_size:
-            if len(self.memory) >= self.memory.buffer_size:
+            if len(self.memory) >= self.memory.batch_size:
                 experiences = self.memory.sample()
                 self.learn(experiences, GAMMA)
 
@@ -86,6 +86,7 @@ class Agent():
         self.munetwork_local.eval()
         with torch.no_grad():
             actions = self.munetwork_local(state).cpu().data.numpy()
+            #actions = np.zeros(2)
         self.munetwork_local.train()
         if add_noise:
             actions += beta*self.noise.sample()
@@ -129,6 +130,7 @@ class Agent():
             actor_loss = -self.qnetwork_local(states, actions_pred).mean()
             # Minimize the loss
             self.munetwork_optimizer.zero_grad()
+            torch.nn.utils.clip_grad_norm_(self.munetwork_local.parameters(), CLIP_GRAD)
             actor_loss.backward()
             self.munetwork_optimizer.step()
             del actor_loss
