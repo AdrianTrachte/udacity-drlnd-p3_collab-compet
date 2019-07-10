@@ -21,9 +21,7 @@ The principal algorithm as given in the [paper](https://arxiv.org/abs/1509.02971
 * --**End Loop**
 * **End Loop**
 
-TODO: check parameters
-
-Where these steps are repeated for each step in each episode. Note that the epsilon value for choosing the action epsilon greedy is reduced linearly over episodes, starting with `eps_start = 1.0` and ending at `eps_end = 0.01` after `eps_nEpisodes = 4000`. 
+Where these steps are repeated for each step in each episode. Note that the epsilon value for choosing the action epsilon greedy is reduced linearly over episodes, starting with `eps_start = 1.0` and ending at `eps_end = 0.01` after maximum number of episodes, that is in the solution case `eps_nEpisodes = 2000`. 
 
 Further agent hyperparameters are:
 
@@ -42,11 +40,13 @@ As optimizer `Adam` has been used.
 As the observation space of the environment for each agent is `state_size = 24` and `action_size = 2`, the input size of the critic network Q(s_i, a_i | θ_Q) is 26 and output size is 1. The input size of the actor μ(s_i | θ_μ) is equal to the state size 24. For both networks two linear hidden layers are used, with size `hidden_layers = [256, 128]` for the critic and actor, with `relu` activation. For the actor the output function `tanh` is used to keep outputs between -1 and 1.
 
 # 2. Plot of Rewards
-With the above described agent the environment has been solved in TODO: 1858 episodes. The development of average rewards as well with all scores over each episode are provided below.
+With the above described agent the environment has been solved in 1476 episodes. The development of average rewards as well with all scores over each episode are provided below.
 
 ![Score over Episodes for DDPG agent](./data/MADDPG_results_report.png "Score over Episodes")
 
-Without exploration a mean score of TODO can be reached.
+If the agent is run for 4000 episodes a maximum score of 2.05 can be reached with this configuration as shown below.
+
+![Maximum Score](./data/MADDPG_maxScore_report.png "Maximum Score")
 
 # 3. Ideas for Future Work
 - Implement Prioritized Experience Replay as described in this [paper](https://arxiv.org/abs/1511.05952) or for DDPG in this [paper](https://ieeexplore.ieee.org/abstract/document/8122622)
