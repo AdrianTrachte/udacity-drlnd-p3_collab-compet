@@ -57,7 +57,7 @@ def save_agentcheckpoint(state_size, action_size, agents):
 
 def save_agenttrained(state_size, action_size, agents):
     ''' save final neural network weights of critic and actor '''
-        for i in range(len(agents)):
+    for i in range(len(agents)):
         checkpoint = {'input_size': state_size+action_size,
                       'output_size': 1,
                       'hidden_layers': [each.out_features for each in agents[i].qnetwork_local.hidden_layers],

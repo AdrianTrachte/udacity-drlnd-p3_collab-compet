@@ -48,6 +48,6 @@ With the above described agent the environment has been solved in TODO: 1858 epi
 
 Without exploration a mean score of TODO can be reached.
 
-# 4. Ideas for Future Work
+# 3. Ideas for Future Work
 - Implement Prioritized Experience Replay as described in this [paper](https://arxiv.org/abs/1511.05952) or for DDPG in this [paper](https://ieeexplore.ieee.org/abstract/document/8122622)
 - Use a PPO algorithm instead of DDPG as can be found in this [paper](https://arxiv.org/pdf/1707.06347.pdf)
